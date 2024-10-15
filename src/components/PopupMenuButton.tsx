@@ -152,7 +152,7 @@ export default function PopupMenuButton({
       {children}
       {eventPosition && (
         <div
-          className={`absolute shadow-lg bg-tint-lightest bg-white rounded-lg z-10`}
+          className={`absolute shadow-lg bg-tint rounded-lg z-10`}
           ref={popupRef}
           style={{
             top: popupPosition.top ? offset : undefined,

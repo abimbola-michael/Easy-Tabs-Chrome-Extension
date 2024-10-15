@@ -2,13 +2,13 @@ import { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 
 export default function UrlSearchInput({
-  url,
+  prevUrl = "",
   onSearch,
 }: {
-  url?: string;
+  prevUrl?: string;
   onSearch: (url: string) => void;
 }) {
-  const [value, setValue] = useState<string>(() => url);
+  const [url, setUrl] = useState<string>(prevUrl);
   return (
     <div
       className={`flex-1 px-4 py-2 rounded-full bg-tint-lightest text-blackcursor-pointer flex items-center gap-2`}
@@ -18,13 +18,13 @@ export default function UrlSearchInput({
         className="w-full text-sm font-semibold line-clamp-1 text-nowrap outline-none border-none bg-transparent"
         autoFocus
         placeholder="Search Google or Type a URL"
-        value={value}
+        value={url}
         onChange={(e) => {
-          setValue(e.currentTarget.value);
+          setUrl(e.currentTarget.value);
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            onSearch(value);
+            onSearch(url);
           }
         }}
       />

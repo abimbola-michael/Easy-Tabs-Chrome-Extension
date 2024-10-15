@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useRef, useState } from "react";
 
 export default function LongPressButton({
   onLongPress,
@@ -7,27 +7,23 @@ export default function LongPressButton({
   onLongPress: (e?: React.MouseEvent) => void;
   children: ReactNode;
 }) {
-  const [isLongPress, setIsLongPress] = useState(false);
-  const [timerId, setTimerId] = useState<number | null>(null);
+  const timerId = useRef<number | null>(null);
   const longPressDuration = 500; // Define how long the press should last
 
   // Start the long press timer
   const handleMouseDown = (e) => {
     const timer = window.setTimeout(() => {
-      setIsLongPress(true);
       // Trigger the long press action
       onLongPress(e);
     }, longPressDuration);
-
-    setTimerId(timer);
+    timerId.current = timer;
   };
 
   // Clear the long press timer
   const handleMouseUp = () => {
     if (timerId) {
-      clearTimeout(timerId);
+      clearTimeout(timerId.current);
     }
-    setIsLongPress(false);
   };
 
   return (

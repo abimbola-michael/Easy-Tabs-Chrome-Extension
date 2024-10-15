@@ -1,5 +1,5 @@
 import { MdClose, MdEdit } from "react-icons/md";
-import { TabCategory } from "../interfaces/TabCategory";
+import { defaultTabCategories, TabCategory } from "../interfaces/TabCategory";
 import { IoIosCloseCircle } from "react-icons/io";
 import CircleButton from "./CircleButton";
 
@@ -25,13 +25,13 @@ export default function TabCategoryItem({
         category == selectedCategory
           ? "bg-off-tint text-off-tint"
           : "bg-tint-lightest text-tint"
-      } cursor-pointer flex items-center gap-2`}
+      } cursor-pointer flex items-center gap-2 select-none`}
       onClick={onClick}
     >
       <span className="text-xs font-semibold line-clamp-1 text-nowrap">
         {category}
       </span>
-      {isDeleteMode && (
+      {isDeleteMode && !defaultTabCategories.includes(category) && (
         <div className="flex gap-1 items-center text-sm">
           <CircleButton
             className="w-4 h-4"

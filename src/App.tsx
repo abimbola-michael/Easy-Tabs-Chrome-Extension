@@ -463,6 +463,7 @@ function App() {
         loopCategory === prevCategory ? category : loopCategory
       )
     );
+    resetAppModeToDefault();
   }
 
   function removeCategory(category: string, index: number) {
@@ -483,6 +484,7 @@ function App() {
         setTabs([]);
       }
     }
+    resetAppModeToDefault();
   }
 
   function getCategoryTabs(category: string) {
@@ -735,7 +737,10 @@ function App() {
 
   function executeTabOption(name: string, tab: ChromeTab) {
     if (name.startsWith("Remove from")) {
-      removeTabFromCategory(tab.id, name.substring(name.lastIndexOf(" ")));
+      removeTabFromCategory(
+        tab.id,
+        name.substring(name.lastIndexOf(" ")).trim()
+      );
       return;
     }
     switch (name) {
@@ -770,7 +775,7 @@ function App() {
 
   function executeAddTabToCategoryOption(name: string, tab: ChromeTab) {
     if (name.startsWith("Add to")) {
-      addTabToCategory(tab, name.substring(name.lastIndexOf(" ")));
+      addTabToCategory(tab, name.substring(name.lastIndexOf(" ")).trim());
       return;
     }
     addTabToCategory(tab, name);
@@ -923,28 +928,32 @@ function App() {
           >
             {tabMode == TabMode.grid ? <IoList /> : <FiGrid />}
           </CircleButton>
-          <ClickOutsideView
-            onClickOutside={() => {
-              if (currentAppMode !== undefined) {
-                resetAppModeToDefault();
-              }
-            }}
+
+          <ul
+            className="w-full flex-1 flex items-center gap-2 overflow-x-auto"
+            style={{ scrollbarWidth: "none" }}
           >
-            <ul
-              className="w-full flex-1 flex items-center gap-2 overflow-x-auto"
-              style={{ scrollbarWidth: "none" }}
-            >
-              {categories.map((category, index) =>
-                index === categoryUpdateIndex ? (
-                  <TabCategoryInput
-                    previousName={category}
-                    onSave={(name) => updateTabCategory(category, name)}
-                    onClose={closeCreateOrEditTabCategory}
-                  />
-                ) : (
+            {categories.map((category, index) =>
+              index === categoryUpdateIndex ? (
+                <TabCategoryInput
+                  previousName={category}
+                  onSave={(name) => updateTabCategory(category, name)}
+                  onClose={closeCreateOrEditTabCategory}
+                />
+              ) : (
+                <ClickOutsideView
+                  listen={currentAppMode !== undefined}
+                  onClickOutside={() => {
+                    if (currentAppMode !== undefined) {
+                      resetAppModeToDefault();
+                    }
+                  }}
+                >
                   <LongPressButton
-                    onLongPress={() =>
-                      setCurrentAppMode(AppMode.modifyCategory)
+                    onLongPress={
+                      defaultTabCategories.includes(category)
+                        ? undefined
+                        : () => setCurrentAppMode(AppMode.modifyCategory)
                     }
                   >
                     <TabCategoryItem
@@ -957,37 +966,37 @@ function App() {
                       onEdit={() => startEditTabCategory(index)}
                     />
                   </LongPressButton>
+                </ClickOutsideView>
 
-                  // <PopupMenuButton
-                  //   onRightClickPopup={
-                  //     defaultTabCategories.includes(category)
-                  //       ? undefined
-                  //       : {
-                  //           options: categoryOptions,
-                  //           onOptionSelect: (option) =>
-                  //             executeCategoryOption(option, category, index),
-                  //         }
-                  //   }
-                  // >
-                  //   <TabCategoryItem
-                  //     key={category}
-                  //     isDeleteMode={currentAppMode == AppMode.modifyCategory}
-                  //     selectedCategory={selectedCategory}
-                  //     category={category}
-                  //     onClick={() => openTabCategory(category)}
-                  //     onClose={() => closeTabCategory(category)}
-                  //   />
-                  // </PopupMenuButton>
-                )
-              )}
-              {categoryUpdateIndex === -1 && (
-                <TabCategoryInput
-                  onSave={createTabCategory}
-                  onClose={closeCreateOrEditTabCategory}
-                />
-              )}
-            </ul>
-          </ClickOutsideView>
+                // <PopupMenuButton
+                //   onRightClickPopup={
+                //     defaultTabCategories.includes(category)
+                //       ? undefined
+                //       : {
+                //           options: categoryOptions,
+                //           onOptionSelect: (option) =>
+                //             executeCategoryOption(option, category, index),
+                //         }
+                //   }
+                // >
+                //   <TabCategoryItem
+                //     key={category}
+                //     isDeleteMode={currentAppMode == AppMode.modifyCategory}
+                //     selectedCategory={selectedCategory}
+                //     category={category}
+                //     onClick={() => openTabCategory(category)}
+                //     onClose={() => closeTabCategory(category)}
+                //   />
+                // </PopupMenuButton>
+              )
+            )}
+            {categoryUpdateIndex === -1 && (
+              <TabCategoryInput
+                onSave={createTabCategory}
+                onClose={closeCreateOrEditTabCategory}
+              />
+            )}
+          </ul>
 
           {currentAppMode === undefined && (
             <CircleButton onClick={startCreateTabCategory}>
@@ -1043,7 +1052,7 @@ function App() {
         </div>
       </div>
       <div className="flex items-center gap-2 text-xl px-4 py-2">
-        <UrlSearchInput url={selectedTab?.url ?? ""} onSearch={searchWeb} />
+        <UrlSearchInput prevUrl={selectedTab?.url ?? ""} onSearch={searchWeb} />
         <FaArrowLeft onClick={backwardTab} />
         <FaArrowRight onClick={forwardTab} />
         <FaArrowsRotate onClick={reloadTab} />
