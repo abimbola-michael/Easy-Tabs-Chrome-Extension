@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Easy tabs",
+  "version": "1.0",
+  "description": "Manage and organize your tabs efficiently.",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": ["tabs", "storage", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
